@@ -4,12 +4,12 @@ package net.yageek.lambert;
 import static java.lang.Math.*;
 import static net.yageek.lambert.LambertZone.*;
 
-class Lambert {
+public class Lambert {
 
  /*
  *   ALGO0002
  */
-    private static double lat_from_lat_iso(double lat_iso, double e,double eps)
+ private static double lat_from_lat_iso(double lat_iso, double e,double eps)
     {
 
         double phi_0 =  2* atan(exp(lat_iso)) - M_PI_2;
@@ -74,7 +74,7 @@ class Lambert {
      *
      */
 
-    LambertPoint geographic_to_cartesian(double lon, double lat, double he, double a, double e)
+    private static LambertPoint geographic_to_cartesian(double lon, double lat, double he, double a, double e)
     {
         double N = lambert_normal(lat,a,e);
 
@@ -117,14 +117,13 @@ class Lambert {
 
         return pt;
     }
-
- /*
+     /*
  * Convert Lambert -> WGS84
  * http://geodesie.ign.fr/contenu/fichiers/documentation/pedagogiques/transfo.pdf
  *
  */
 
-   private LambertPoint ConvertToWGS84(LambertPoint org,LambertZone zone){
+    public static LambertPoint ConvertToWGS84(LambertPoint org,LambertZone zone){
 
         LambertPoint pt1 =  lambert_to_geographic(org,zone,LON_MERID_PARIS,E_CLARK_IGN,DEFAULT_EPS);
 
@@ -139,54 +138,18 @@ class Lambert {
 
     }
 
-    public LambertPoint ConvertToWGS84(double x, double y, LambertZone zone){
+    public static LambertPoint ConvertToWGS84(double x, double y, LambertZone zone){
 
         LambertPoint pt = new LambertPoint(x,y,0);
         return ConvertToWGS84(pt,zone);
     }
 
+    public static LambertPoint ConvertToWGS84Deg(double x, double y, LambertZone zone){
+
+        LambertPoint pt = new LambertPoint(x,y,0);
+        return ConvertToWGS84(pt,zone).toDegree();
+    }
+
 }
 
 
-class LambertPoint {
-
-    private double x;
-    private double y;
-    private double z;
-
-    LambertPoint(double x, double y , double z){
-        this.x = x;
-        this.y = y;
-        this.z = z;
-    }
-    double getX() {
-        return x;
-    }
-
-    void setX(double x) {
-        this.x = x;
-    }
-
-    double getY() {
-        return y;
-    }
-
-    void setY(double y) {
-        this.y = y;
-    }
-
-    double getZ() {
-        return z;
-    }
-
-    void setZ(double z) {
-        this.z = z;
-    }
-
-    void translate(double x , double y, double z){
-
-        this.x+= x;
-        this.y+= y;
-        this.z+= z;
-    }
-}
