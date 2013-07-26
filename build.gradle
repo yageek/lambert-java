@@ -1,0 +1,16 @@
+apply plugin:'java'
+	repositories {
+	 mavenCentral()
+}
+
+dependencies {
+
+	testCompile 'junit:junit:4.8.2'
+}
+
+test {
+    testLogging {
+        // Show that tests are run in the command-line output
+        events 'started', 'passed'
+    }
+}
