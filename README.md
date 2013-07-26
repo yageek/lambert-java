@@ -2,7 +2,9 @@
 A simple java library to convert Lambert Coordinates to GPS WGS84 coordinates based on the [IGN alorithms and methods](http://geodesie.ign.fr/contenu/fichiers/documentation/algorithmes/notice/NTG_71.pdf)
 
 # Install
-Download `lambert-java.jar`and add it to your project
+* Install `gradle`
+* Compile with `gradle assemble`
+* Add the generated `build/libs/lambert-java.jar` file to your project
 
 # Usage
 
