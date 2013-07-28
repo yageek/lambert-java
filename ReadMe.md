@@ -7,6 +7,9 @@ A simple java library to convert Lambert Coordinates to GPS WGS84 coordinates ba
 * Compile with `gradle assemble`
 * Add the generated `build/libs/lambert-java.jar` file to your project
 
+## Bintray
+* https://bintray.com/yageek/maven/lambert-java
+
 # Usage
 
 ```java
