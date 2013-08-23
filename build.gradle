@@ -1,4 +1,19 @@
-apply plugin:'java'
+group = 'net.yageek.lambert'
+version = '0.1'
+
+ buildscript {
+        repositories {
+            maven { url 'http://jcenter.bintray.com' }
+        }
+        dependencies {
+            classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:0.3'
+        }
+    }
+apply plugin: 'java'
+apply plugin: 'maven-publish'
+apply plugin: 'bintray'
+
+
 	repositories {
 	 mavenCentral()
 }
@@ -8,9 +23,60 @@ dependencies {
 	testCompile 'junit:junit:4.8.2'
 }
 
-test {
-    testLogging {
-        // Show that tests are run in the command-line output
-        events 'started', 'passed'
+task sourcesJar(type: Jar, dependsOn: classes) {
+    from sourceSets.main.allSource
+}
+
+artifacts {
+    archives sourcesJar
+}
+def pomConfig = {
+    licenses {
+        license {
+            name "GNU General Public License v2.0"
+            url "www.gnu.org/licenses/gpl-2.0.html"
+            distribution "repo"
+        }
     }
+    developers {
+        developer {
+            id "yageek"
+            name "Yannick Heinrich"
+            email "yannick.heinich@gmail.com"
+        }
+    }
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+            artifact sourcesJar {
+                classifier "sources"
+            }
+
+            pom.withXml {
+                def root = asNode()
+                root.appendNode('description', 'A gradle plugin for publishing to Bintray')
+                root.children().last() + pomConfig
+            }
+        }
+    }
+}
+
+ bintray {
+        user = user_name
+        key = apikey
+        publications = ['mavenJava'] // When uploading Maven-based publication files
+        pkg {
+            repo = 'maven'
+            name = 'lambert-java'
+            desc = 'A simple java library to convert Lambert Coordinates to GPS WGS84 coordinates based on the IGN alorithms and methods.'
+            licenses = ['GPL-2.0']
+            labels = ['lambert', 'java', 'gps']
+        }
+    }
+
+task install(dependsOn: 'publishMavenJavaPublicationToMavenLocal') << {
+    logger.info "Installing $project.name"
 }
