@@ -11,7 +11,7 @@ public enum LambertZone{
 	private final static double[] LAMBERT_XS = {600000.0, 600000.0, 600000.0, 234.358, 600000.0, 700000.0};
 	private final static double[] LAMBERT_YS = {5657616.674, 6199695.768, 6791905.085, 7239161.542, 8199695.768, 12655612.050};
 
-    public final static double M_PI_2 = 1.57079632679489661923;
+    public final static double M_PI_2 = Math.PI/2.0;
     public final static double DEFAULT_EPS = 1e-10 ;
     public final static double E_CLARK_IGN =  0.08248325676  ;
     public final static double E_WGS84 =  0.08181919106  ;
@@ -20,6 +20,7 @@ public enum LambertZone{
     public final static double A_WGS84 =  6378137.0  ;
     public final static double LON_MERID_PARIS = 0  ;
     public final static double LON_MERID_GREENWICH =0.04079234433 ;
+    public final static double LON_MERID_IERS = 3.0*Math.PI/180.0;
 
 
 

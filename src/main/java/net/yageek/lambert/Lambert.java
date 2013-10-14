@@ -125,17 +125,20 @@ public class Lambert {
 
     public static LambertPoint convertToWGS84(LambertPoint org, LambertZone zone){
 
-        LambertPoint pt1 =  lambertToGeographic(org, zone, LON_MERID_PARIS, E_CLARK_IGN, DEFAULT_EPS);
+        if(zone == Lambert93)
+        {
+         return lambertToGeographic(org,Lambert93,LON_MERID_IERS,E_WGS84,DEFAULT_EPS);
+        }
+        else {
+            LambertPoint pt1 =  lambertToGeographic(org, zone, LON_MERID_PARIS, E_CLARK_IGN, DEFAULT_EPS);
 
-        LambertPoint pt2 = geographicToCartesian(pt1.getX(), pt1.getY(), pt1.getZ(), A_CLARK_IGN, E_CLARK_IGN);
+            LambertPoint pt2 = geographicToCartesian(pt1.getX(), pt1.getY(), pt1.getZ(), A_CLARK_IGN, E_CLARK_IGN);
 
-        pt2.translate(-168,-60,320);
+            pt2.translate(-168,-60,320);
 
-        //WGS84 refers to greenwich
-        pt2 = cartesianToGeographic(pt2, LON_MERID_GREENWICH, A_WGS84, E_WGS84, DEFAULT_EPS);
-
-        return pt2;
-
+            //WGS84 refers to greenwich
+            return cartesianToGeographic(pt2, LON_MERID_GREENWICH, A_WGS84, E_WGS84, DEFAULT_EPS);
+        }
     }
 
     public static LambertPoint convertToWGS84(double x, double y, LambertZone zone){
