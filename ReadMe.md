@@ -17,7 +17,3 @@ A simple java library to convert Lambert Coordinates to GPS WGS84 coordinates ba
  LambertPoint pt = Lambert.convertToWGS84Deg(994272.661, 113467.422, LambertZone.LambertI);
  System.out.println("Point latitude:" + pt.getY() + " longitude:" + pt.getX());
 ```
-
-#License
-Copyright (c) 2013 Yannick Heinrich - Released under the GPLv2 License.
-
