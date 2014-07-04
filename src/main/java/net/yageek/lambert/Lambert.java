@@ -21,10 +21,11 @@ http://www.sarasafavi.com/installing-gdalogr-on-ubuntu.html
 http://cs2cs.mygeodata.eu/
 Conversion From Lambert Zone II to WGS 84 :
 $>cs2cs +proj=lcc +lat_1=46.8 +lat_0=46.8 +lon_0=0 +k_0=0.99987742 +x_0=600000 +y_0=2200000 +a=6378249.2 +b=6356515 +towgs84=-168,-60,320,0,0,0,0 +pm=paris +units=m +no_defs +to +proj=longlat +datum=WGS84 +no_defs -f "%.11f" <<EOF
-> 618062.6287556458 2430668.2797339745
+> 618115 2430676
 > EOF
 
-2.58260346086	48.87407486915 43.05556181818
+2.58331732871	48.87414278182 43.05512374267
+
 --------------------------------------------------------------------------------------
 Conversion From WGS 84 To Lambert Zone II:
 $>cs2cs +proj=longlat +datum=WGS84 +no_defs +to +proj=lcc +lat_1=46.8 +lat_0=46.8 +lon_0=0 +k_0=0.99987742 +x_0=600000 +y_0=2200000 +a=6378249.2 +b=6356515 +towgs84=-168,-60,320,0,0,0,0 +pm=paris +units=m +no_defs  -f "%.11f" <<EOF
