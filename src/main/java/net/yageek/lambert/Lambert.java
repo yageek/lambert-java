@@ -34,7 +34,6 @@ EOF
 */
 
 
-
 /*
 Documentations :
 http://geodesie.ign.fr/contenu/fichiers/documentation/algorithmes/notice/NTG_71.pdf
@@ -54,9 +53,7 @@ public class Lambert {
         double elt21 = e * sin(lat);
         double elt2 = pow((1 - elt21) / (1 + elt21), e / 2d);
 
-        double latISo = log(elt1 * elt2);
-
-        return latISo;
+        return log(elt1 * elt2);
     }
 
 
@@ -98,10 +95,7 @@ public class Lambert {
         double x = xs + C * eLatIso * sin(nLon);
         double y = ys - C * eLatIso * cos(nLon);
 
-
-        LambertPoint lambertPoint = new LambertPoint(x, y, 0);
-
-        return lambertPoint;
+        return new LambertPoint(x, y, 0);
     }
 
     /*
@@ -129,9 +123,7 @@ public class Lambert {
         double x = xs + (R * sin(LAMBDA));
         double y = ys - (R * cos(LAMBDA));
 
-        LambertPoint lambertPoint = new LambertPoint(x, y, 0);
-
-        return lambertPoint;
+        return new LambertPoint(x, y, 0);
     }
 
 /*
@@ -160,8 +152,7 @@ public class Lambert {
 
         double lat = latitudeFromLatitudeISO(latIso, e, eps);
 
-        LambertPoint dest = new LambertPoint(lon, lat, 0);
-        return dest;
+        return new LambertPoint(lon, lat, 0);
     }
 
  /*
@@ -215,9 +206,7 @@ public class Lambert {
 
         double he = module / cos(phiI) - a / sqrt(1 - e * e * sin(phiI) * sin(phiI));
 
-        LambertPoint pt = new LambertPoint(lon, phiI, he);
-
-        return pt;
+        return new LambertPoint(lon, phiI, he);
     }
 
      /*
@@ -238,8 +227,7 @@ public class Lambert {
             pt2.translate(-168, -60, 320);
 
             //WGS84 refers to greenwich
-            LambertPoint lp = cartesianToGeographic(pt2, LON_MERID_GREENWICH, A_WGS84, E_WGS84, DEFAULT_EPS);
-            return lp;
+            return cartesianToGeographic(pt2, LON_MERID_GREENWICH, A_WGS84, E_WGS84, DEFAULT_EPS);
         }
     }
 
@@ -267,7 +255,7 @@ public class Lambert {
     /*
         Method not really usefull, just to have two ways of doing the same conversion.
      */
-    public static LambertPoint convertToLambertByAlg003(double latitude, double longitude, LambertZone zone) throws NotImplementedException{
+    public static LambertPoint convertToLambertByAlg003(double latitude, double longitude, LambertZone zone) throws NotImplementedException {
 
         if (zone == Lambert93) {
             throw new NotImplementedException();
