@@ -49,6 +49,9 @@ public class Lambert {
     /*
     *   ALGO0001
     */
+    public static Apfloat latitudeISOFromLat(double lat, double e){
+        return latitudeISOFromLat(new Apfloat(lat), new Apfloat(e));
+    }
     public static Apfloat latitudeISOFromLat(Apfloat lat, Apfloat e) {
 
         Apfloat elt11 = new Apfloat(Math.PI).divide(new Apfloat(4d));
