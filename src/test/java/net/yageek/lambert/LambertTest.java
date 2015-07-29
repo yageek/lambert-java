@@ -42,15 +42,15 @@ public class LambertTest {
     @Test
     public void Lambert93BugTest() {
         LambertPoint pt = Lambert.convertToWGS84Deg(668832.5384, 6950138.7285, LambertZone.Lambert93);
-        assertEquals(2.56865, pt.getX(), 0.0001);
-        assertEquals(49.64961, pt.getY(), 0.0001);
+        assertEquals(2.56865, pt.getX().doubleValue(), 0.0001);
+        assertEquals(49.64961, pt.getY().doubleValue(), 0.0001);
     }
 
     @Test
     public void LambertIIExtendedToWgs84Test() {
         LambertPoint pt = Lambert.convertToWGS84Deg(618115, 2430676, LambertZone.LambertIIExtended);
-        assertEquals(2.58331732871, pt.getX(), 0.0001);  // Longitude 2.5832231178521186
-        assertEquals(48.8741427818, pt.getY(), 0.0001);  // Latitude 48.87412734248018
+        assertEquals(2.58331732871, pt.getX().doubleValue(), 0.0001);  // Longitude 2.5832231178521186
+        assertEquals(48.8741427818, pt.getY().doubleValue(), 0.0001);  // Latitude 48.87412734248018
     }
 
 
@@ -77,8 +77,8 @@ public class LambertTest {
 
         LambertPoint lambertPoint = Lambert.geographicToLambertAlg003(latitude, longitude, LambertZone.LambertI, LambertZone.LON_MERID_GREENWICH, LambertZone.E_CLARK_IGN);
 
-        assertEquals(1029705.0818, lambertPoint.getX(), 0.0001);
-        assertEquals(272723.84730, lambertPoint.getY(), 0.0001);
+        assertEquals(1029705.0818, lambertPoint.getX().doubleValue(), 0.0001);
+        assertEquals(272723.84730, lambertPoint.getY().doubleValue(), 0.0001);
     }
 
     /*
@@ -95,8 +95,8 @@ public class LambertTest {
 
         LambertPoint lambertPoint = Lambert.convertToLambertByAlg003(radLat, radLong, LambertZone.LambertIIExtended);
 
-        assertEquals(618115, lambertPoint.getX(), 1);
-        assertEquals(2430676, lambertPoint.getY(), 1);
+        assertEquals(618115, lambertPoint.getX().doubleValue(), 1);
+        assertEquals(2430676, lambertPoint.getY().doubleValue(), 1);
     }
 
 
@@ -115,8 +115,8 @@ public class LambertTest {
 
         LambertPoint lambertPoint = Lambert.geographicToLambert(radLat, radLong, LambertZone.LambertIIExtended, LambertZone.LON_MERID_GREENWICH, LambertZone.E_CLARK_IGN);
 
-        assertEquals(618062, lambertPoint.getX(), 1);
-        assertEquals(2430668, lambertPoint.getY(), 1);
+        assertEquals(618062, lambertPoint.getX().doubleValue(), 1);
+        assertEquals(2430668, lambertPoint.getY().doubleValue(), 1);
     }
 
     /*
@@ -134,8 +134,8 @@ public class LambertTest {
 
         LambertPoint lambertPoint = Lambert.geographicToLambert(radLat, radLong, LambertZone.LambertII, LON_MERID_PARIS, E_CLARK_IGN);
 
-        assertEquals(632542.058, lambertPoint.getX(), 0.001);
-        assertEquals(180804.145, lambertPoint.getY(), 0.01);
+        assertEquals(632542.058, lambertPoint.getX().doubleValue(), 0.001);
+        assertEquals(180804.145, lambertPoint.getY().doubleValue(), 0.01);
     }
 
     /*
@@ -150,8 +150,8 @@ public class LambertTest {
 
         LambertPoint lambertPoint = Lambert.lambertToGeographic(new LambertPoint(X, Y, 0), LambertZone.LambertI, LON_MERID_PARIS, E_CLARK_IGN, DEFAULT_EPS);
 
-        assertEquals(0.145512099, lambertPoint.getX(), 10); // Longitude en rad
-        assertEquals(0.872664626, lambertPoint.getY(), 10); // Latitude en trad
+        assertEquals(0.145512099, lambertPoint.getX().doubleValue(), 10); // Longitude en rad
+        assertEquals(0.872664626, lambertPoint.getY().doubleValue(), 10); // Latitude en trad
     }
 
     /*
@@ -169,8 +169,8 @@ public class LambertTest {
 
         LambertPoint lambertPoint = Lambert.convertToLambert(radLat, radLong, LambertZone.LambertIIExtended);
 
-        assertEquals(618115, lambertPoint.getX(), 1);
-        assertEquals(2430676, lambertPoint.getY(), 1);
+        assertEquals(618115, lambertPoint.getX().doubleValue(), 1);
+        assertEquals(2430676, lambertPoint.getY().doubleValue(), 1);
     }
 
 }

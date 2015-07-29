@@ -1,6 +1,9 @@
 package net.yageek.lambert;
 
 
+import org.apfloat.Apfloat;
+
+import org.apfloat.ApfloatMath;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import static java.lang.Math.*;
@@ -46,31 +49,44 @@ public class Lambert {
     /*
     *   ALGO0001
     */
-    public static double latitudeISOFromLat(double lat, double e) {
-        double elt11 = Math.PI / 4d;
-        double elt12 = lat / 2d;
-        double elt1 = tan(elt11 + elt12);
+    public static Apfloat latitudeISOFromLat(Apfloat lat, Apfloat e) {
 
-        double elt21 = e * sin(lat);
-        double elt2 = pow((1 - elt21) / (1 + elt21), e / 2d);
+        Apfloat elt11 = new Apfloat(Math.PI).divide(new Apfloat(4d));
+        Apfloat elt12 = lat.divide( new Apfloat(2d));
+        Apfloat elt1 = ApfloatMath.tan(elt11.add(elt12));
 
-        return log(elt1 * elt2);
+        Apfloat elt21 = e.add(ApfloatMath.sin(lat));
+        Apfloat elt2 = ApfloatMath.pow( Apfloat.ONE.subtract(elt11).divide(Apfloat.ONE.add(elt21)), e.divide(new Apfloat(2d)) );
+
+        return ApfloatMath.log(elt1.multiply(elt2));
     }
 
 
     /*
     *   ALGO0002
     */
-    private static double latitudeFromLatitudeISO(double latISo, double e, double eps) {
+    private static Apfloat latitudeFromLatitudeISO(Apfloat latISo, Apfloat e, Apfloat eps) {
 
-        double phi0 = 2 * atan(exp(latISo)) - M_PI_2;
-        double phiI = 2 * atan(pow((1 + e * sin(phi0)) / (1 - e * sin(phi0)), e / 2d) * exp(latISo)) - M_PI_2;
-        double delta = abs(phiI - phi0);
+        Apfloat two = new Apfloat(2);
+        Apfloat aM_PI_2 = new Apfloat(M_PI_2);
+        Apfloat phi0 = two.multiply(ApfloatMath.atan(ApfloatMath.exp(latISo))).subtract(aM_PI_2);
 
-        while (delta > eps) {
+        Apfloat eSinPhi0 = e.multiply(ApfloatMath.sin(phi0));
+        Apfloat phiIPowA = Apfloat.ONE.add(eSinPhi0).divide(Apfloat.ONE.subtract(eSinPhi0));
+
+        Apfloat phiI = two.multiply(ApfloatMath.atan(ApfloatMath.pow(phiIPowA, e.divide(new Apfloat(2d))))).multiply(latISo).subtract(aM_PI_2);
+        //double phiI = 2 * atan(pow((1 + e * sin(phi0)) / (1 - e * sin(phi0)), e / 2d) * exp(latISo)) - M_PI_2;
+        Apfloat delta = ApfloatMath.abs(phiI.subtract(phi0));
+
+        while (delta.doubleValue()> eps.doubleValue()) {
             phi0 = phiI;
-            phiI = 2 * atan(pow((1 + e * sin(phi0)) / (1 - e * sin(phi0)), e / 2d) * exp(latISo)) - M_PI_2;
-            delta = abs(phiI - phi0);
+
+            eSinPhi0 = e.multiply(ApfloatMath.sin(phi0));
+            phiIPowA = Apfloat.ONE.add(eSinPhi0).divide(Apfloat.ONE.subtract(eSinPhi0));
+
+            phiI =  two.multiply(ApfloatMath.atan(ApfloatMath.pow(phiIPowA, e.divide(new Apfloat(2d))))).multiply(latISo).subtract(aM_PI_2);
+            //phiI = 2 * atan(pow((1 + e * sin(phi0)) / (1 - e * sin(phi0)), e / 2d) * exp(latISo)) - M_PI_2;
+            delta = ApfloatMath.abs(phiI.subtract(phi0));
         }
 
         return phiI;
@@ -80,80 +96,93 @@ public class Lambert {
     /*
    *   ALGO0003
    */
-    public static LambertPoint geographicToLambertAlg003(double latitude, double longitude, LambertZone zone, double lonMeridian, double e) {
+    public static LambertPoint geographicToLambertAlg003(Apfloat latitude, Apfloat longitude, LambertZone zone, Apfloat lonMeridian, Apfloat e) {
 
-        double n = zone.n();
-        double C = zone.c();
-        double xs = zone.xs();
-        double ys = zone.ys();
+        Apfloat n = new Apfloat(zone.n());
+        Apfloat C = new Apfloat(zone.c());
+        Apfloat xs = new Apfloat(zone.xs());
+        Apfloat ys = new Apfloat(zone.ys());
 
-        double latIso = latitudeISOFromLat(latitude, e);
+        Apfloat latIso = latitudeISOFromLat(latitude, e);
 
-        double eLatIso = exp(-n * latIso);
+        Apfloat eLatIso = ApfloatMath.exp(n.negate().multiply(latIso));
 
-        double nLon = n * (longitude - lonMeridian);
+        Apfloat nLon = n.multiply(longitude.subtract(lonMeridian));
 
-        double x = xs + C * eLatIso * sin(nLon);
-        double y = ys - C * eLatIso * cos(nLon);
+        Apfloat x = xs.add(C.multiply(eLatIso).multiply(ApfloatMath.sin(nLon)));
+        ys.add(C.multiply(eLatIso).multiply(ApfloatMath.cos(nLon)));
+        Apfloat y =  ys.add(C.multiply(eLatIso).multiply(ApfloatMath.cos(nLon)));
 
-        return new LambertPoint(x, y, 0);
+        return new LambertPoint(x, y, Apfloat.ZERO);
     }
 
     /*
    *  http://geodesie.ign.fr/contenu/fichiers/documentation/pedagogiques/TransformationsCoordonneesGeodesiques.pdf
    *  3.4 Coordonnées géographiques Lambert
    */
-    public static LambertPoint geographicToLambert(double latitude, double longitude, LambertZone zone, double lonMeridian, double e) {
+    public static LambertPoint geographicToLambert(Apfloat latitude, Apfloat longitude, LambertZone zone, Apfloat lonMeridian, Apfloat e) {
 
-        double n = zone.n();
-        double C = zone.c();
-        double xs = zone.xs();
-        double ys = zone.ys();
+        Apfloat two = new Apfloat(2d);
 
-        double sinLat = sin(latitude);
-        double eSinLat = (e * sinLat);
-        double elt1 = (1 + sinLat) / (1 - sinLat);
-        double elt2 = (1 + eSinLat) / (1 - eSinLat);
+        Apfloat n = new Apfloat(zone.n());
+        Apfloat C = new Apfloat(zone.c());
+        Apfloat xs = new Apfloat(zone.xs());
+        Apfloat ys = new Apfloat(zone.ys());
 
-        double latIso = (1 / 2d) * log(elt1) - (e / 2d) * log(elt2);
+        Apfloat sinLat = ApfloatMath.sin(latitude);
+        Apfloat eSinLat = e.multiply(sinLat);
+        Apfloat elt1 = Apfloat.ONE.add(sinLat).divide(Apfloat.ONE.subtract(sinLat)); //(1 + sinLat) / (1 - sinLat);
+        Apfloat elt2 = Apfloat.ONE.add(eSinLat).divide(Apfloat.ONE.subtract(eSinLat));;//(1 + eSinLat) / (1 - eSinLat);
 
-        double R = C * exp(-(n * latIso));
+        Apfloat latIso = Apfloat.ONE.divide(two).multiply(ApfloatMath.log(elt1)).subtract(e.divide(two).multiply(ApfloatMath.log(elt2)));
 
-        double LAMBDA = n * (longitude - lonMeridian);
+        Apfloat R = C.multiply(ApfloatMath.exp(n.multiply(latIso).negate()));
 
-        double x = xs + (R * sin(LAMBDA));
-        double y = ys - (R * cos(LAMBDA));
+        Apfloat LAMBDA = n.multiply(longitude.subtract(lonMeridian));
 
-        return new LambertPoint(x, y, 0);
+        Apfloat x = xs.add(R.multiply(ApfloatMath.sin(LAMBDA)));
+        Apfloat y =ys.subtract(R.multiply(ApfloatMath.cos(LAMBDA)));
+
+        return new LambertPoint(x, y, Apfloat.ZERO);
     }
 
 /*
 *	ALGO0004 - Lambert vers geographiques
 */
 
-    public static LambertPoint lambertToGeographic(LambertPoint org, LambertZone zone, double lonMeridian, double e, double eps) {
-        double n = zone.n();
-        double C = zone.c();
-        double xs = zone.xs();
-        double ys = zone.ys();
+    public static LambertPoint lambertToGeographic(LambertPoint org, LambertZone zone, double lonMeridian, double e, double eps){
+        return lambertToGeographic(org, zone, new Apfloat(lonMeridian), new Apfloat(e), new Apfloat(eps));
+    }
 
-        double x = org.getX();
-        double y = org.getY();
+    public static LambertPoint lambertToGeographic(LambertPoint org, LambertZone zone, Apfloat lonMeridian, Apfloat e, Apfloat eps) {
 
 
-        double lon, gamma, R, latIso;
 
-        R = sqrt((x - xs) * (x - xs) + (y - ys) * (y - ys));
+        Apfloat n = new Apfloat(zone.n());
+        Apfloat C = new Apfloat(zone.c());
+        Apfloat xs = new Apfloat(zone.xs());
+        Apfloat ys = new Apfloat(zone.ys());
 
-        gamma = atan((x - xs) / (ys - y));
+        Apfloat x = org.getX();
+        Apfloat y = org.getY();
 
-        lon = lonMeridian + gamma / n;
 
-        latIso = -1 / n * log(abs(R / C));
+        Apfloat lon, gamma, R, latIso;
 
-        double lat = latitudeFromLatitudeISO(latIso, e, eps);
+        Apfloat xN = x.subtract(xs);
+        Apfloat yN = y.subtract(ys);
 
-        return new LambertPoint(lon, lat, 0);
+        R = ApfloatMath.sqrt(xN.multiply(xN).add(yN.multiply(yN)));
+
+        gamma = ApfloatMath.atan(xN.divide(yN.negate()));
+
+        lon = lonMeridian.add(gamma.divide(n));
+
+        latIso = Apfloat.ONE.negate().divide(n).multiply(ApfloatMath.log(ApfloatMath.abs(R.divide(C))));
+
+        Apfloat lat = latitudeFromLatitudeISO(latIso, e, eps);
+
+        return new LambertPoint(lon, lat, Apfloat.ZERO);
     }
 
  /*
@@ -161,9 +190,11 @@ public class Lambert {
  *
 */
 
-    private static double lambertNormal(double lat, double a, double e) {
+    private static Apfloat lambertNormal(Apfloat lat, Apfloat a, Apfloat e) {
 
-        return a / sqrt(1 - e * e * sin(lat) * sin(lat));
+        Apfloat sintLat = ApfloatMath.sin(lat);
+        return a.divide(ApfloatMath.sqrt(Apfloat.ONE.subtract(e.multiply(e).multiply(sintLat).multiply(sintLat))));
+        //return a / sqrt(1 - e * e * sin(lat) * sin(lat));
     }
 
     /*
@@ -171,14 +202,24 @@ public class Lambert {
      *
      */
 
-    private static LambertPoint geographicToCartesian(double lon, double lat, double he, double a, double e) {
-        double N = lambertNormal(lat, a, e);
+    private static LambertPoint geographicToCartesian(Apfloat lon, Apfloat lat, Apfloat he, double a, double e){
+        return geographicToCartesian(lon, lat, he, new Apfloat(a), new Apfloat(e));
+    }
+    private static LambertPoint geographicToCartesian(Apfloat lon, Apfloat lat, Apfloat he, Apfloat a, Apfloat e) {
+        Apfloat N = lambertNormal(lat, a, e);
 
         LambertPoint pt = new LambertPoint(0, 0, 0);
 
-        pt.setX((N + he) * cos(lat) * cos(lon));
-        pt.setY((N + he) * cos(lat) * sin(lon));
-        pt.setZ((N * (1 - e * e) + he) * sin(lat));
+        Apfloat cosLat = ApfloatMath.cos(lat);
+        Apfloat sinLat = ApfloatMath.sin(lat);
+
+        Apfloat cosLon = ApfloatMath.cos(lon);
+        Apfloat sinLon = ApfloatMath.sin(lon);
+
+        pt.setX((N.add(he).multiply(cosLat).multiply(cosLon)));
+        pt.setY((N.add(he).multiply(cosLat).multiply(sinLon)));
+
+        pt.setZ(N.multiply(Apfloat.ONE.subtract(e.multiply(e))).add(he).multiply(sinLat));
 
         return pt;
 
@@ -187,25 +228,44 @@ public class Lambert {
     /*
  * ALGO0012 - Passage des coordonnées cartésiennes aux coordonnées géographiques
  */
+    private static LambertPoint cartesianToGeographic(LambertPoint org, double meridien, double a, double e, double eps){
+        return cartesianToGeographic(org, new Apfloat(meridien), new Apfloat(a), new Apfloat(e), new Apfloat(eps));
+    }
 
-    private static LambertPoint cartesianToGeographic(LambertPoint org, double meridien, double a, double e, double eps) {
-        double x = org.getX(), y = org.getY(), z = org.getZ();
+    private static LambertPoint cartesianToGeographic(LambertPoint org, Apfloat meridien, Apfloat a, Apfloat e, Apfloat eps) {
+        Apfloat x = org.getX(), y = org.getY(), z = org.getZ();
 
-        double lon = meridien + atan(y / x);
+        Apfloat lon = meridien.add(ApfloatMath.atan(y.divide(x)));
 
-        double module = sqrt(x * x + y * y);
+        Apfloat module = ApfloatMath.sqrt(x.multiply(x).add(y.multiply(y)));
 
-        double phi0 = atan(z / (module * (1 - (a * e * e) / sqrt(x * x + y * y + z * z))));
-        double phiI = atan(z / module / (1 - a * e * e * cos(phi0) / (module * sqrt(1 - e * e * sin(phi0) * sin(phi0)))));
-        double delta = abs(phiI - phi0);
-        while (delta > eps) {
+        Apfloat x2 = x.multiply(x);
+        Apfloat y2 = y.multiply(y);
+        Apfloat z2 = z.multiply(z);
+        Apfloat e2 = e.multiply(e);
+
+        Apfloat phi0 = ApfloatMath.atan(z.divide(module.multiply(Apfloat.ONE.subtract(a.multiply(e2))).divide(ApfloatMath.sqrt(x2.add(y2).add(z2)))));
+
+        Apfloat cosPhi0 =  ApfloatMath.cos(phi0);
+        Apfloat sinPhi0 =  ApfloatMath.sin(phi0);
+
+        //double phi0 = atan(z / (module * (1 - (a * e * e) / sqrt(x * x + y * y + z * z))));
+        Apfloat phiI = ApfloatMath.atan(z.divide(module).divide(Apfloat.ONE.subtract(a.multiply(e2).multiply(cosPhi0))).divide(module.multiply(ApfloatMath.sqrt(Apfloat.ONE.subtract(e2.multiply(sinPhi0).multiply(sinPhi0))))));
+        //double phiI = atan(z / module / (1 - a * e * e * cos(phi0) / (module * sqrt(1 - e * e * sin(phi0) * sin(phi0)))));
+        Apfloat delta = ApfloatMath.abs(phiI.subtract(phi0));
+        while (delta.doubleValue() > eps.doubleValue()) {
             phi0 = phiI;
-            phiI = atan(z / module / (1 - a * e * e * cos(phi0) / (module * sqrt(1 - e * e * sin(phi0) * sin(phi0)))));
-            delta = abs(phiI - phi0);
+
+            cosPhi0 =  ApfloatMath.cos(phi0);
+            sinPhi0 =  ApfloatMath.sin(phi0);
+
+            phiI = ApfloatMath.atan(z.divide(module).divide(Apfloat.ONE.subtract(a.multiply(e2).multiply(cosPhi0))).divide(module.multiply(ApfloatMath.sqrt(Apfloat.ONE.subtract(e2.multiply(sinPhi0).multiply(sinPhi0))))));
+            delta = ApfloatMath.abs(phiI.subtract(phi0));
 
         }
 
-        double he = module / cos(phiI) - a / sqrt(1 - e * e * sin(phiI) * sin(phiI));
+        Apfloat sinPhiI = ApfloatMath.sin(phiI);
+        Apfloat he = module.divide(ApfloatMath.cos(phiI)).subtract(a.divide(ApfloatMath.sqrt(Apfloat.ONE.subtract(e2)).multiply(sinPhiI).multiply(sinPhiI)));
 
         return new LambertPoint(lon, phiI, he);
     }
@@ -243,13 +303,13 @@ public class Lambert {
         if (zone == Lambert93) {
             throw new NotImplementedException();
         } else {
-            LambertPoint pt1 = geographicToCartesian(longitude - LON_MERID_GREENWICH, latitude, 0, A_WGS84, E_WGS84);
+            LambertPoint pt1 = geographicToCartesian(new Apfloat(longitude - LON_MERID_GREENWICH), new Apfloat(latitude), Apfloat.ZERO, A_WGS84, E_WGS84);
 
             pt1.translate(168, 60, -320);
 
             LambertPoint pt2 = cartesianToGeographic(pt1, LON_MERID_PARIS, A_WGS84, E_WGS84, DEFAULT_EPS);
 
-            return geographicToLambert(pt2.getY(), pt2.getX(), zone, LON_MERID_PARIS, E_WGS84);
+            return geographicToLambert(pt2.getY(), pt2.getX(), zone, new Apfloat(LON_MERID_PARIS), new Apfloat(E_WGS84));
         }
     }
 
@@ -261,13 +321,13 @@ public class Lambert {
         if (zone == Lambert93) {
             throw new NotImplementedException();
         } else {
-            LambertPoint pt1 = geographicToCartesian(longitude - LON_MERID_GREENWICH, latitude, 0, A_WGS84, E_WGS84);
+            LambertPoint pt1 = geographicToCartesian(new Apfloat(longitude - LON_MERID_GREENWICH), new Apfloat(latitude), Apfloat.ZERO, A_WGS84, E_WGS84);
 
             pt1.translate(168, 60, -320);
 
             LambertPoint pt2 = cartesianToGeographic(pt1, LON_MERID_PARIS, A_WGS84, E_WGS84, DEFAULT_EPS);
 
-            return geographicToLambertAlg003(pt2.getY(), pt2.getX(), zone, LON_MERID_PARIS, E_WGS84);
+            return geographicToLambertAlg003(pt2.getY(), pt2.getX(), zone, new Apfloat(LON_MERID_PARIS), new Apfloat(E_WGS84));
         }
     }
 

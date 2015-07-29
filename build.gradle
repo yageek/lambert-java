@@ -19,7 +19,7 @@ apply plugin: 'bintray'
 }
 
 dependencies {
-
+    compile 'org.apfloat:apfloat:1.8.2'
 	testCompile 'junit:junit:4.8.2'
 }
 
@@ -65,8 +65,8 @@ publishing {
 }
 
  bintray {
-        user = user_name
-        key = api_key
+        user = ""
+        key = ""
         publications = ['mavenJava'] // When uploading Maven-based publication files
         pkg {
             repo = 'maven'

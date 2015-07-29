@@ -1,51 +1,65 @@
 package net.yageek.lambert;
 
+import org.apfloat.Apfloat;
+
 public class LambertPoint {
 
-    private double x;
-    private double y;
-    private double z;
+    private Apfloat x;
+    private Apfloat y;
+    private Apfloat z;
 
-    LambertPoint(double x, double y , double z){
+
+    LambertPoint(double x, double y, double z){
+        this.x = new Apfloat(x);
+        this.y = new Apfloat(y);
+        this.z = new Apfloat(z);
+    }
+    LambertPoint(Apfloat x, Apfloat y , Apfloat z){
         this.x = x;
         this.y = y;
         this.z = z;
     }
-    public double getX() {
+    public Apfloat getX() {
         return x;
     }
 
-    public void setX(double x) {
+    public void setX(Apfloat x) {
         this.x = x;
     }
 
-   public double getY() {
+   public Apfloat getY() {
         return y;
     }
 
-   public void setY(double y) {
+   public void setY(Apfloat y) {
         this.y = y;
     }
 
-    public double getZ() {
+    public Apfloat getZ() {
         return z;
     }
 
-    public void setZ(double z) {
+    public void setZ(Apfloat z) {
         this.z = z;
     }
 
     public void translate(double x , double y, double z){
+        translate(new Apfloat(x), new Apfloat(y), new Apfloat(z));
+    }
+    public void translate(Apfloat x , Apfloat y, Apfloat z){
 
-        this.x+= x;
-        this.y+= y;
-        this.z+= z;
+        this.x = this.x.add(x);
+        this.y = this.y.add(y);
+        this.z = this.z.add(z);
     }
 
     public LambertPoint toDegree(){
-        this.x = this.x * 180/Math.PI;
-        this.y = this.y * 180/Math.PI;
-        this.z = this.z * 180/Math.PI;
+
+        Apfloat pi = new Apfloat(Math.PI);
+        Apfloat factor = new Apfloat(180.0f).divide(pi);
+        this.x = this.x.multiply(factor);
+        this.y = this.y.multiply(factor);
+        this.z = this.z.multiply(factor);
 
         return this;
     }
