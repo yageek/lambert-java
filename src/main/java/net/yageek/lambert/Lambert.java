@@ -59,8 +59,10 @@ public class Lambert {
         Apfloat elt12 = lat.divide(new Apfloat("2.0", PREC));
         Apfloat elt1 = ApfloatMath.tan(elt11.add(elt12));
 
-        Apfloat elt21 = e.add(ApfloatMath.sin(lat));
-        Apfloat elt2 = ApfloatMath.pow(Apfloat.ONE.subtract(elt11).divide(Apfloat.ONE.add(elt21)), e.divide(new Apfloat("2.0", PREC)));
+        Apfloat elt21 = e.multiply(ApfloatMath.sin(lat));
+        Apfloat elt2 = ApfloatMath.pow(
+                Apfloat.ONE.subtract(elt21).divide(Apfloat.ONE.add(elt21)),
+                e.divide(new Apfloat("2.0", PREC)));
 
         return ApfloatMath.log(elt1.multiply(elt2));
     }
@@ -119,8 +121,7 @@ public class Lambert {
         Apfloat nLon = n.multiply(longitude.subtract(lonMeridian));
 
         Apfloat x = xs.add(C.multiply(eLatIso).multiply(ApfloatMath.sin(nLon)));
-        ys.add(C.multiply(eLatIso).multiply(ApfloatMath.cos(nLon)));
-        Apfloat y = ys.add(C.multiply(eLatIso).multiply(ApfloatMath.cos(nLon)));
+        Apfloat y = ys.subtract(C.multiply(eLatIso).multiply(ApfloatMath.cos(nLon)));
 
         return new LambertPoint(x, y, Apfloat.ZERO);
     }
